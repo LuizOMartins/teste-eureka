@@ -64,6 +64,8 @@ public class WorkflowServiceTest {
         Step resultStep = mockWorkflow.getCurrentStep();
         assertNotNull(resultStep);
         assertEquals("em_analise", resultStep.getName());
+        System.out.println(mockWorkflow);
+        System.out.println(mockWorkflow.getCurrentStep());
 
         // Verificar que o Workflow foi salvo com o novo currentStep
         verify(workflowRepository, times(1)).save(mockWorkflow);

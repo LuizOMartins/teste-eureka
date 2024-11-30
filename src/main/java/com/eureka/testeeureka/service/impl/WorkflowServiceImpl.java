@@ -64,6 +64,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
     }
 
+    @Override
+    public List<Step> findAllByWorkflowId(Long workflowId) {
+        return stepRepository.findAllByWorkflowId(workflowId);
+    }
+
     public void moveToNextStep(Workflow workflow) {
         Step currentStep = workflow.getCurrentStep();
         Step nextStep = getNextStep(currentStep.getId());

@@ -10,4 +10,5 @@ public interface WorkflowService {
     Workflow save(Workflow workflow);
     void deleteById(Long id);
     Step getNextStep(Long fromStepId);
+    List<Step> findAllByWorkflowId(Long workflowId);
 }
