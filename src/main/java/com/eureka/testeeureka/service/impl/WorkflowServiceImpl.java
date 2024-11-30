@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WorkflowServiceImpl implements WorkflowService {
@@ -53,10 +54,20 @@ public class WorkflowServiceImpl implements WorkflowService {
 
 
     @Override
-    public Step getNextStep(Long fromStepId) {
-        StepTransitions transition = stepTransitionsRepository.findByFromStepId(fromStepId)
-                .orElseThrow(() -> new RuntimeException("Nenhuma transição encontrada para o Step ID: " + fromStepId));
+    public Step getNextStep(Long currentStepId) {
+        Optional<StepTransitions> transition = stepTransitionsRepository.findByFromStepId(currentStepId);
 
-        return transition.getToStep();
+        if (transition.isPresent()) {
+            return transition.get().getToStep();
+        } else {
+            throw new IllegalStateException("Não há transições disponíveis para o Step atual.");
+        }
+    }
+
+    public void moveToNextStep(Workflow workflow) {
+        Step currentStep = workflow.getCurrentStep();
+        Step nextStep = getNextStep(currentStep.getId());
+        workflow.setCurrentStep(nextStep);
+        workflowRepository.save(workflow);
     }
 }

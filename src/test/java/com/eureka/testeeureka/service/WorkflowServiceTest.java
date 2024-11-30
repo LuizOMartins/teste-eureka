@@ -6,6 +6,7 @@ import com.eureka.testeeureka.model.StepTransitions;
 import com.eureka.testeeureka.model.Workflow;
 import com.eureka.testeeureka.repository.StepRepository;
 import com.eureka.testeeureka.repository.StepTransitionsRepository;
+import com.eureka.testeeureka.repository.WorkflowRepository;
 import com.eureka.testeeureka.service.impl.WorkflowServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ public class WorkflowServiceTest {
     @Mock
     private StepTransitionsRepository stepTransitionsRepository;
 
+    @Mock
+    private WorkflowRepository workflowRepository;
+
     private Workflow mockWorkflow;
     private List<Step> mockSteps;
     private List<StepTransitions> mockTransitions;
@@ -41,18 +45,28 @@ public class WorkflowServiceTest {
         mockSteps = WorkflowMock.createMockSteps(mockWorkflow);
         mockTransitions = WorkflowMock.createMockTransitions(mockWorkflow, mockSteps);
     }
-
     @Test
     void testTransitionFromAguardandoAnaliseToEmAnalise() {
+        // Configuração inicial
         Step currentStep = mockSteps.get(0);
         StepTransitions transition = mockTransitions.get(0);
 
+        mockWorkflow.setCurrentStep(currentStep);
+        // Configuração dos mocks
         lenient().when(stepRepository.findById(currentStep.getId())).thenReturn(java.util.Optional.of(currentStep));
         lenient().when(stepTransitionsRepository.findByFromStepId(currentStep.getId())).thenReturn(java.util.Optional.of(transition));
+        lenient().when(workflowRepository.save(mockWorkflow)).thenReturn(mockWorkflow);
 
-        Step resultStep = workflowService.getNextStep(currentStep.getId());
+        // Transição para o próximo Step
+        workflowService.moveToNextStep(mockWorkflow);
 
+        // Validação
+        Step resultStep = mockWorkflow.getCurrentStep();
         assertNotNull(resultStep);
         assertEquals("em_analise", resultStep.getName());
+
+        // Verificar que o Workflow foi salvo com o novo currentStep
+        verify(workflowRepository, times(1)).save(mockWorkflow);
     }
+
 }

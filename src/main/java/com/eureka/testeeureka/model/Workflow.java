@@ -1,10 +1,8 @@
 package com.eureka.testeeureka.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 public class Workflow {
@@ -16,6 +14,13 @@ public class Workflow {
     private String name;
 
     private String description;
+
+    @OneToMany(mappedBy = "workflow")
+    private List<Step> steps;
+
+    @ManyToOne
+    @JoinColumn(name = "current_step_id", referencedColumnName = "id")
+    private Step currentStep;
 
     // Getters e Setters
     public Long getId() {
@@ -41,6 +46,15 @@ public class Workflow {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Step getCurrentStep() {
+        return currentStep;
+    }
+
+    public void setCurrentStep(Step currentStep) {
+        this.currentStep = currentStep;
+    }
+
 
     @Override
     public String toString() {
