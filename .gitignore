@@ -1,0 +1,102 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+
+# Ignore arquivos e pastas gerados pelo IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Ignore build outputs
+/target/
+*.class
+
+# Ignore arquivos de log
+*.log
+
+# Ignore arquivos temporários do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Ignore configurações do Maven
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+# Ignore dependências baixadas pelo Maven
+dependency-reduced-pom.xml
+
+# Ignore configurações do Gradle
+.gradle/
+/build/
+
+# Ignore arquivos de cache do Eclipse (se utilizado)
+.classpath
+.project
+.settings/
+
+# Ignore arquivos de cache do sistema operacional
+*.swp
+*.swo
+
+# Ignore arquivos do sistema operacional Windows
+*.bak
+*.tmp
+
+# Ignore arquivos de configurações locais do ambiente
+*.env
+*.properties.local
+
+# Ignore arquivos de credenciais
+secrets.json
+config.json
+
+# Ignore arquivos gerados por bibliotecas ou ferramentas
+.h2.server.properties
+**/hs_err_pid*.log
+heapdump.hprof
+
+# Ignore binários gerados
+*.jar
+*.war
+*.ear
+
+# Ignore uploads temporários
+/upload-dir/
+
+# Ignore arquivos relacionados a IDEs ou editores de texto
+.vscode/
+*.code-workspace
+
+/test-output/
