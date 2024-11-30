@@ -53,4 +53,14 @@ public class StepTransitions {
     public void setWorkflow(Workflow workflow) {
         this.workflow = workflow;
     }
+
+    @Override
+    public String toString() {
+        return "StepTransitions{" +
+                "id=" + id +
+                ", fromStep=" + fromStep +
+                ", toStep=" + toStep +
+                ", workflow=" + workflow +
+                '}';
+    }
 }

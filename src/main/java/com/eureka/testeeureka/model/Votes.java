@@ -43,6 +43,18 @@ public class Votes {
         return step;
     }
 
+    @Override
+    public String toString() {
+        return "Votes{" +
+                "id=" + id +
+                ", step=" + step +
+                ", script=" + script +
+                ", user=" + user +
+                ", vote=" + vote +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
     public void setStep(Step step) {
         this.step = step;
     }

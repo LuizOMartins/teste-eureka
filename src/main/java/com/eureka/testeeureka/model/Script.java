@@ -6,6 +6,18 @@ import java.util.Date;
 
 @Entity
 public class Script {
+    @Override
+    public String toString() {
+        return "Script{" +
+                "id=" + id +
+                ", workflow=" + workflow +
+                ", client=" + client +
+                ", currentStep=" + currentStep +
+                ", content='" + content + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -72,4 +72,16 @@ public class Step {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
+
+    @Override
+    public String toString() {
+        return "Step{" +
+                "id=" + id +
+                ", workflow=" + workflow +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", roleRequired='" + roleRequired + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

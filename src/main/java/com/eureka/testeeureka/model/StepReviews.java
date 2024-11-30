@@ -91,4 +91,17 @@ public class StepReviews {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
+
+    @Override
+    public String toString() {
+        return "StepReviews{" +
+                "id=" + id +
+                ", step=" + step +
+                ", script=" + script +
+                ", user=" + user +
+                ", status='" + status + '\'' +
+                ", comment='" + comment + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }
