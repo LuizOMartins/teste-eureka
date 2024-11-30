@@ -51,16 +51,6 @@ public class WorkflowServiceImpl implements WorkflowService {
         return stepTransitionsRepository.existsByFromStepIdAndToStepId(fromStepId, toStepId);
     }
 
-    public Step executeAction(Long scriptId, Users user) {
-        Script script = scriptRepository.findById(scriptId)
-                .orElseThrow(() -> new RuntimeException("Script não encontrado"));
-        Step currentStep = script.getCurrentStep();
-        Step nextStep = getNextStep(currentStep.getId());
-
-        script.setCurrentStep(nextStep);
-        scriptRepository.save(script);
-        return nextStep;
-    }
 
     @Override
     public Step getNextStep(Long fromStepId) {
