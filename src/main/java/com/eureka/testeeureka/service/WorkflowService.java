@@ -1,11 +1,13 @@
 package com.eureka.testeeureka.service;
 
-import com.eureka.testeeureka.model.Workflow;
 import java.util.List;
+import com.eureka.testeeureka.model.Step;
+import com.eureka.testeeureka.model.Workflow;
 
 public interface WorkflowService {
     List<Workflow> findAll();
     Workflow findById(Long id);
     Workflow save(Workflow workflow);
     void deleteById(Long id);
+    Step getNextStep(Long fromStepId);
 }
