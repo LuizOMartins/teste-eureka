@@ -1,10 +1,7 @@
 package com.eureka.testeeureka.service.impl;
 
 import com.eureka.testeeureka.model.*;
-import com.eureka.testeeureka.repository.ScriptRepository;
-import com.eureka.testeeureka.repository.StepRepository;
-import com.eureka.testeeureka.repository.StepTransitionsRepository;
-import com.eureka.testeeureka.repository.WorkflowRepository;
+import com.eureka.testeeureka.repository.*;
 import com.eureka.testeeureka.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +14,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Autowired
     private StepRepository stepRepository;
+
+    @Autowired
+    private StepReviewsRepository stepReviewsRepository;
 
     @Autowired
     private ScriptRepository scriptRepository;
@@ -69,10 +69,40 @@ public class WorkflowServiceImpl implements WorkflowService {
         return stepRepository.findAllByWorkflowId(workflowId);
     }
 
-    public void moveToNextStep(Workflow workflow) {
+    @Override
+    public void analysisStep(Workflow workflow, Long userId, String comment, String userRole) {
         Step currentStep = workflow.getCurrentStep();
-        Step nextStep = getNextStep(currentStep.getId());
+
+        // Validar se o Step foi assumido por algum usuário
+        Optional<StepReviews> reviewOpt = stepReviewsRepository.findByStepIdAndUserId(currentStep.getId(), userId);
+
+        if (reviewOpt.isEmpty()) {
+            throw new IllegalStateException("O usuário não assumiu a etapa atual.");
+        }
+
+        // Validar se o usuário tem a role necessária para modificar o Step
+        String requiredRole = currentStep.getRoleRequired();
+        if (requiredRole != null && !requiredRole.equalsIgnoreCase(userRole)) {
+            throw new SecurityException("Usuário não possui a role necessária para alterar o Step atual.");
+        }
+
+        // Atualizar a revisão
+        StepReviews review = reviewOpt.get();
+        review.setComment(comment);
+        review.setStatus("completed");
+        stepReviewsRepository.save(review);
+
+        // Validar transição para o próximo Step
+        Optional<StepTransitions> transitionOpt = stepTransitionsRepository.findByFromStepId(currentStep.getId());
+
+        if (transitionOpt.isEmpty()) {
+            throw new IllegalStateException("Não há transições disponíveis para a etapa atual.");
+        }
+
+        Step nextStep = transitionOpt.get().getToStep();
         workflow.setCurrentStep(nextStep);
-        workflowRepository.save(workflow);
+        workflowRepository.save(workflow); // Salvar Workflow com o novo Step
     }
+
+
 }

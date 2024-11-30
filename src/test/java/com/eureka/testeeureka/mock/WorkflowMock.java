@@ -67,4 +67,19 @@ public class WorkflowMock {
 
         return transition;
     }
+
+    public static List<StepReviews> createMockStepReviews(List<Step> steps, Long userId) {
+        List<StepReviews> reviews = new ArrayList<>();
+        for (Step step : steps) {
+            StepReviews review = new StepReviews();
+            review.setId(step.getId());
+            review.setStep(step);
+            review.setUserId(userId);
+            review.setStatus("pending");
+            reviews.add(review);
+        }
+
+        return reviews;
+    }
+
 }

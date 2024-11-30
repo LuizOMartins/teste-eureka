@@ -1,12 +1,10 @@
 package com.eureka.testeeureka.model;
-import jakarta.persistence.*;
-import java.util.Date;
-
 
 import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "step_reviews", schema = "eureka_test")
 public class StepReviews {
 
     @Id
@@ -17,18 +15,16 @@ public class StepReviews {
     @JoinColumn(name = "step_id", nullable = true)
     private Step step;
 
-    @ManyToOne
-    @JoinColumn(name = "script_id", nullable = true)
-    private Script script;
+    @Column(name = "script_id", nullable = true)
+    private Long scriptId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = true)
-    private Users user;
+    @Column(name = "user_id", nullable = true)
+    private Long userId;
 
     @Column(nullable = false, length = 50)
     private String status;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -52,20 +48,20 @@ public class StepReviews {
         this.step = step;
     }
 
-    public Script getScript() {
-        return script;
+    public Long getScriptId() {
+        return scriptId;
     }
 
-    public void setScript(Script script) {
-        this.script = script;
+    public void setScriptId(Long scriptId) {
+        this.scriptId = scriptId;
     }
 
-    public Users getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(Users user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getStatus() {
@@ -97,8 +93,8 @@ public class StepReviews {
         return "StepReviews{" +
                 "id=" + id +
                 ", step=" + step +
-                ", script=" + script +
-                ", user=" + user +
+                ", scriptId=" + scriptId +
+                ", userId=" + userId +
                 ", status='" + status + '\'' +
                 ", comment='" + comment + '\'' +
                 ", createdAt=" + createdAt +
