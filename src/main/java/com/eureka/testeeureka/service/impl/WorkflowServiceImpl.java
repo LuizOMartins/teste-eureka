@@ -2,15 +2,18 @@ package com.eureka.testeeureka.service.impl;
 
 import com.eureka.testeeureka.model.*;
 import com.eureka.testeeureka.repository.*;
+import com.eureka.testeeureka.enums.StepType;
+import org.springframework.stereotype.Service;
 import com.eureka.testeeureka.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class WorkflowServiceImpl implements WorkflowService {
+
+    private static final Long STATUS_REJECTED = 8L;
 
     @Autowired
     private StepRepository stepRepository;
@@ -55,27 +58,29 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Override
     public Step getNextStep(Long currentStepId) {
-        Optional<StepTransitions> transition = stepTransitionsRepository.findByFromStepId(currentStepId);
+        List<StepTransitions> transitions = stepTransitionsRepository.findByFromStepId(currentStepId);
 
-        if (transition.isPresent()) {
-            return transition.get().getToStep();
-        } else {
+        if (transitions.isEmpty()) {
             throw new IllegalStateException("Não há transições disponíveis para o Step atual.");
         }
+        return transitions.stream()
+                .map(StepTransitions::getToStep)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Nenhum Step de destino encontrado nas transições."));
     }
+
 
     @Override
     public List<Step> findAllByWorkflowId(Long workflowId) {
         return stepRepository.findAllByWorkflowId(workflowId);
     }
 
-    @Override
-    public void analysisStep(Workflow workflow, Long userId, String comment, String userRole) {
+    public void analysisStep(Workflow workflow, Long userId, String comment, String userRole, boolean isApproved) {
         Step currentStep = workflow.getCurrentStep();
+        System.out.println("Step atual recebido: " + currentStep);
 
         // Validar se o Step foi assumido por algum usuário
         Optional<StepReviews> reviewOpt = stepReviewsRepository.findByStepIdAndUserId(currentStep.getId(), userId);
-
         if (reviewOpt.isEmpty()) {
             throw new IllegalStateException("O usuário não assumiu a etapa atual.");
         }
@@ -86,23 +91,26 @@ public class WorkflowServiceImpl implements WorkflowService {
             throw new SecurityException("Usuário não possui a role necessária para alterar o Step atual.");
         }
 
-        // Atualizar a revisão
+        // Atualizar revisão
         StepReviews review = reviewOpt.get();
         review.setComment(comment);
-        review.setStatus("completed");
+        review.setStatus(isApproved ? "approved" : "rejected");
         stepReviewsRepository.save(review);
 
-        // Validar transição para o próximo Step
-        Optional<StepTransitions> transitionOpt = stepTransitionsRepository.findByFromStepId(currentStep.getId());
+        // Buscar a transição baseada na decisão
+        Long nextStepId = isApproved ? StepType.EM_ANALISE.getId() : StepType.RECUSADO.getId();
+        System.out.println("Buscando transição de: " + currentStep.getId() + " para: " + nextStepId);
+
+        Optional<StepTransitions> transitionOpt = stepTransitionsRepository.findByFromStepIdAndToStepId(
+                currentStep.getId(), nextStepId);
 
         if (transitionOpt.isEmpty()) {
             throw new IllegalStateException("Não há transições disponíveis para a etapa atual.");
         }
 
+        // Atualizar o Workflow para o próximo Step
         Step nextStep = transitionOpt.get().getToStep();
         workflow.setCurrentStep(nextStep);
-        workflowRepository.save(workflow); // Salvar Workflow com o novo Step
+        workflowRepository.save(workflow);
     }
-
-
 }

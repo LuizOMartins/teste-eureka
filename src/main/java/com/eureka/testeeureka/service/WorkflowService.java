@@ -11,5 +11,5 @@ public interface WorkflowService {
     void deleteById(Long id);
     Step getNextStep(Long fromStepId);
     List<Step> findAllByWorkflowId(Long workflowId);
-    void analysisStep(Workflow workflow, Long userId, String comment, String userRole);
+    void analysisStep(Workflow workflow, Long userId, String comment, String userRole, boolean isApproved);
 }

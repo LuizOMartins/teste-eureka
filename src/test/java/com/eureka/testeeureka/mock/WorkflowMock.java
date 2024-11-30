@@ -19,14 +19,14 @@ public class WorkflowMock {
     public static List<Step> createMockSteps(Workflow workflow) {
         List<Step> steps = new ArrayList<>();
 
-        steps.add(createStep(1L, workflow, "aguardando_analise", "Cliente envia o roteiro. Aguardando usuário assumir.", null));
-        steps.add(createStep(2L, workflow, "em_analise", "Analista revisa o roteiro.", "ANALISTA"));
-        steps.add(createStep(3L, workflow, "aguardando_revisao", "Aguardando Revisor assumir.", "REVISOR"));
-        steps.add(createStep(4L, workflow, "em_revisao", "Revisor aponta erros ou ideias.", "REVISOR"));
-        steps.add(createStep(5L, workflow, "aguardando_aprovacao", "Aguardando votos de aprovadores.", "APROVADOR"));
-        steps.add(createStep(6L, workflow, "em_aprovacao", "Em votação para aprovação final.", "APROVADOR"));
-        steps.add(createStep(7L, workflow, "aprovado", "Roteiro aprovado e finalizado.", null));
-        steps.add(createStep(8L, workflow, "recusado", "Roteiro recusado. Finalizado.", null));
+        steps.add(createStep(StepType.AGUARDANDO_ANALISE, workflow, "Cliente envia o roteiro. Aguardando usuário assumir.", null));
+        steps.add(createStep(StepType.EM_ANALISE, workflow, "Analista revisa o roteiro.", "ANALISTA"));
+        steps.add(createStep(StepType.AGUARDANDO_REVISAO, workflow, "Aguardando Revisor assumir.", "REVISOR"));
+        steps.add(createStep(StepType.EM_REVISAO, workflow, "Revisor aponta erros ou ideias.", "REVISOR"));
+        steps.add(createStep(StepType.AGUARDANDO_APROVACAO, workflow, "Aguardando votos de aprovadores.", "APROVADOR"));
+        steps.add(createStep(StepType.EM_APROVACAO, workflow, "Em votação para aprovação final.", "APROVADOR"));
+        steps.add(createStep(StepType.APROVADO, workflow, "Roteiro aprovado e finalizado.", null));
+        steps.add(createStep(StepType.RECUSADO, workflow, "Roteiro recusado. Finalizado.", null));
 
         return steps;
     }
@@ -34,23 +34,26 @@ public class WorkflowMock {
     public static List<StepTransitions> createMockTransitions(Workflow workflow, List<Step> steps) {
         List<StepTransitions> transitions = new ArrayList<>();
 
-        transitions.add(createTransition(1L, workflow, steps.get(0), steps.get(1))); // De aguardando_analise para em_analise
-        transitions.add(createTransition(2L, workflow, steps.get(1), steps.get(2))); // De em_analise para aguardando_revisao
-        transitions.add(createTransition(3L, workflow, steps.get(1), steps.get(7))); // De em_analise para recusado
-        transitions.add(createTransition(4L, workflow, steps.get(2), steps.get(3))); // De aguardando_revisao para em_revisao
-        transitions.add(createTransition(5L, workflow, steps.get(3), steps.get(4))); // De em_revisao para aguardando_aprovacao
-        transitions.add(createTransition(6L, workflow, steps.get(4), steps.get(5))); // De aguardando_aprovacao para em_aprovacao
-        transitions.add(createTransition(7L, workflow, steps.get(5), steps.get(6))); // De em_aprovacao para aprovado
-        transitions.add(createTransition(8L, workflow, steps.get(5), steps.get(7))); // De em_aprovacao para recusado
+        transitions.add(createTransition(StepType.AGUARDANDO_ANALISE, StepType.EM_ANALISE, workflow, steps));
+
+        transitions.add(createTransition(StepType.EM_ANALISE, StepType.AGUARDANDO_REVISAO, workflow, steps));
+        transitions.add(createTransition(StepType.EM_ANALISE, StepType.RECUSADO, workflow, steps));
+
+        transitions.add(createTransition(StepType.AGUARDANDO_REVISAO, StepType.EM_REVISAO, workflow, steps));
+        transitions.add(createTransition(StepType.EM_REVISAO, StepType.AGUARDANDO_APROVACAO, workflow, steps));
+
+        transitions.add(createTransition(StepType.AGUARDANDO_APROVACAO, StepType.EM_APROVACAO, workflow, steps));
+        transitions.add(createTransition(StepType.EM_APROVACAO, StepType.APROVADO, workflow, steps));
+        transitions.add(createTransition(StepType.EM_APROVACAO, StepType.RECUSADO, workflow, steps));
 
         return transitions;
     }
 
-    private static Step createStep(Long id, Workflow workflow, String name, String description, String roleRequired) {
+    private static Step createStep(StepType stepType, Workflow workflow, String description, String roleRequired) {
         Step step = new Step();
-        step.setId(id);
+        step.setId(stepType.getId());
         step.setWorkflow(workflow);
-        step.setName(name);
+        step.setName(stepType.name().toLowerCase());
         step.setDescription(description);
         step.setRoleRequired(roleRequired);
         step.setCreatedAt(new Date());
@@ -58,14 +61,21 @@ public class WorkflowMock {
         return step;
     }
 
-    private static StepTransitions createTransition(Long id, Workflow workflow, Step fromStep, Step toStep) {
+    private static StepTransitions createTransition(StepType from, StepType to, Workflow workflow, List<Step> steps) {
         StepTransitions transition = new StepTransitions();
-        transition.setId(id);
+        transition.setId(from.getId());
         transition.setWorkflow(workflow);
-        transition.setFromStep(fromStep);
-        transition.setToStep(toStep);
+        transition.setFromStep(findStepByType(steps, from));
+        transition.setToStep(findStepByType(steps, to));
 
         return transition;
+    }
+
+    private static Step findStepByType(List<Step> steps, StepType stepType) {
+        return steps.stream()
+                .filter(step -> step.getId().equals(stepType.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Step não encontrado para o tipo: " + stepType));
     }
 
     public static List<StepReviews> createMockStepReviews(List<Step> steps, Long userId) {
@@ -81,5 +91,4 @@ public class WorkflowMock {
 
         return reviews;
     }
-
 }
