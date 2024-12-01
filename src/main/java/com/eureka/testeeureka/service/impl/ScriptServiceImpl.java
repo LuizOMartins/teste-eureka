@@ -1,6 +1,7 @@
 package com.eureka.testeeureka.service.impl;
 
 
+import com.eureka.testeeureka.model.Clients;
 import com.eureka.testeeureka.model.Script;
 import com.eureka.testeeureka.repository.ScriptRepository;
 import com.eureka.testeeureka.service.ScriptService;
@@ -35,4 +36,9 @@ public class ScriptServiceImpl implements ScriptService {
     public void deleteById(Long id) {
         scriptRepository.deleteById(id);
     }
+
+    public List<Script> findByClient(Clients client) {
+        return scriptRepository.findByClient(client);
+    }
+
 }

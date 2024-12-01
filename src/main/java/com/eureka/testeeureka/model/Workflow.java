@@ -15,7 +15,7 @@ public class Workflow {
 
     private String description;
 
-    @OneToMany(mappedBy = "workflow")
+    @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Step> steps;
 
     @ManyToOne
@@ -53,6 +53,14 @@ public class Workflow {
 
     public void setCurrentStep(Step currentStep) {
         this.currentStep = currentStep;
+    }
+
+    public List<Step> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<Step> steps) {
+        this.steps = steps;
     }
 
 

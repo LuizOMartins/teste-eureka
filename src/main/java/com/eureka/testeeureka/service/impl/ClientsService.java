@@ -22,4 +22,14 @@ public class ClientsService {
     public Clients save(Clients client) {
         return clientsRepository.save(client);
     }
+
+    public Clients findByEmailOrPhone(String email, String phone) {
+        if (email != null) {
+            return clientsRepository.findByEmail(email);
+        } else if (phone != null) {
+            return clientsRepository.findByPhone(phone);
+        }
+        return null;
+    }
+
 }

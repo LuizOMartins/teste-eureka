@@ -4,6 +4,7 @@ package com.eureka.testeeureka.controller;
 import com.eureka.testeeureka.dto.ScriptDTO;
 import com.eureka.testeeureka.model.Clients;
 import com.eureka.testeeureka.model.Script;
+import com.eureka.testeeureka.model.Step;
 import com.eureka.testeeureka.model.Workflow;
 import com.eureka.testeeureka.service.ScriptService;
 import com.eureka.testeeureka.service.WorkflowService;
@@ -13,6 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -61,4 +66,48 @@ public class ScriptController {
                     .body("Erro ao criar script e cliente: " + e.getMessage());
         }
     }
+
+    @GetMapping("/by-client")
+    @Operation(
+            summary = "Consultar Script por Cliente",
+            description = "Consulta os scripts associados a um cliente com base no e-mail ou telefone. Retorna o step atual do script e as etapas do workflow associado."
+    )
+    public ResponseEntity<?> getScriptsByClient(
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "phone", required = false) String phone
+    ) {
+        try {
+            if (email == null && phone == null) {
+                return ResponseEntity.badRequest().body("Por favor, forneça email ou phone para a consulta.");
+            }
+
+            // Consultar cliente pelo e-mail ou telefone
+            Clients client = clientsService.findByEmailOrPhone(email, phone);
+            if (client == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
+            }
+
+            // Consultar scripts relacionados ao cliente
+            List<Script> scripts = scriptService.findByClient(client);
+            if (scripts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum script encontrado para o cliente fornecido.");
+            }
+
+            // Montar resposta com detalhes dos scripts
+            List<Map<String, Object>> response = scripts.stream().map(script -> {
+                Map<String, Object> scriptDetails = new HashMap<>();
+                scriptDetails.put("scriptId", script.getId());
+                scriptDetails.put("currentStep", script.getCurrentStep() != null ? script.getCurrentStep().getName() : null);
+                scriptDetails.put("workflowSteps", script.getWorkflow().getSteps().stream()
+                        .map(Step::getName)
+                        .collect(Collectors.toList()));
+                return scriptDetails;
+            }).collect(Collectors.toList());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao consultar scripts: " + e.getMessage());
+        }
+    }
+
 }
