@@ -1,12 +1,14 @@
 package com.eureka.testeeureka.controller;
 
 
+import com.eureka.testeeureka.dto.WorkflowDTO;
 import com.eureka.testeeureka.model.Workflow;
+import org.springframework.web.bind.annotation.*;
 import com.eureka.testeeureka.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/workflows")
@@ -16,8 +18,11 @@ public class WorkflowController {
     private WorkflowService workflowService;
 
     @GetMapping
-    public List<Workflow> getAllWorkflows() {
-        return workflowService.findAll();
+    public List<WorkflowDTO> getAllWorkflows() {
+        return workflowService.findAll()
+                .stream()
+                .map(WorkflowDTO::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")

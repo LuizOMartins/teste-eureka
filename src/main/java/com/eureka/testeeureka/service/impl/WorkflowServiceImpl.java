@@ -6,6 +6,7 @@ import com.eureka.testeeureka.enums.StepType;
 import org.springframework.stereotype.Service;
 import com.eureka.testeeureka.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     private WorkflowRepository workflowRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<Workflow> findAll() {
         return workflowRepository.findAll();
     }

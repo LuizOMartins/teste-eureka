@@ -15,7 +15,7 @@ public class Workflow {
 
     private String description;
 
-    @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "workflow", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Step> steps;
 
     @ManyToOne
