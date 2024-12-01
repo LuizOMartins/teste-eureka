@@ -2,6 +2,7 @@ package com.eureka.testeeureka.service.impl;
 
 
 import com.eureka.testeeureka.model.Clients;
+import com.eureka.testeeureka.model.Step;
 import org.hibernate.Hibernate;
 import com.eureka.testeeureka.model.Script;
 import com.eureka.testeeureka.repository.ScriptRepository;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ScriptServiceImpl implements ScriptService {
@@ -57,11 +59,18 @@ public class ScriptServiceImpl implements ScriptService {
         List<Map<String, Object>> scriptDetailsList = new ArrayList<>();
         for (Script script : scripts) {
             Hibernate.initialize(script.getContent());
+            Hibernate.initialize(script.getWorkflow().getSteps());
             Map<String, Object> scriptDetails = new HashMap<>();
             scriptDetails.put("scriptId", script.getId());
             scriptDetails.put("content", script.getContent());
             scriptDetails.put("workflowId", script.getWorkflow().getId());
-            scriptDetails.put("currentStep", script.getCurrentStep().getName());
+            scriptDetails.put("currentStep", script.getCurrentStep() != null ? script.getCurrentStep().getName() : null);
+
+            List<String> workflowSteps = script.getWorkflow().getSteps().stream()
+                    .map(Step::getName)
+                    .collect(Collectors.toList());
+            scriptDetails.put("workflowSteps", workflowSteps);
+
             scriptDetailsList.add(scriptDetails);
         }
 
