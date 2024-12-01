@@ -10,11 +10,13 @@ import com.eureka.testeeureka.model.Workflow;
 import com.eureka.testeeureka.service.ScriptService;
 import com.eureka.testeeureka.service.WorkflowService;
 import com.eureka.testeeureka.service.impl.ClientsService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,5 +104,23 @@ public class ScriptController {
         }
     }
 
+    @GetMapping("/filter")
+    @Operation(
+            summary = "Filtrar Roteiros",
+            description = "Filtra os roteiros por status, data de envio e email. Retorna todos se nenhum filtro for aplicado."
+    )
+    public ResponseEntity<?> filterScripts(
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "dateSent", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateSent,
+            @RequestParam(value = "email", required = false) String email
+    ) {
+        try {
+            List<Map<String, Object>> scripts = scriptService.findFilteredScripts(status, dateSent, email);
+            return ResponseEntity.ok(scripts);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao filtrar scripts: " + e.getMessage());
+        }
+    }
 
 }

@@ -1,8 +1,10 @@
 package com.eureka.testeeureka.model;
 
 
-import jakarta.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import jakarta.persistence.*;
 
 @Entity
 public class Step {
@@ -15,6 +17,9 @@ public class Step {
     @JoinColumn(name = "workflow_id", nullable = false)
     private Workflow workflow;
 
+    @OneToMany(mappedBy = "step", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<StepReviews> stepReviews = new ArrayList<>();
+
     private String name;
 
     private String description;
@@ -24,7 +29,6 @@ public class Step {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -71,6 +75,14 @@ public class Step {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<StepReviews> getStepReviews() {
+        return stepReviews;
+    }
+
+    public void setStepReviews(List<StepReviews> stepReviews) {
+        this.stepReviews = stepReviews;
     }
 
     @Override
