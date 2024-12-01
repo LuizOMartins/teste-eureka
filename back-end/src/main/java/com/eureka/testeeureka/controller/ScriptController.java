@@ -1,6 +1,7 @@
 package com.eureka.testeeureka.controller;
 
 
+import com.eureka.testeeureka.dto.ClientDTO;
 import com.eureka.testeeureka.dto.ScriptDTO;
 import com.eureka.testeeureka.model.Clients;
 import com.eureka.testeeureka.model.Script;
@@ -41,33 +42,33 @@ public class ScriptController {
         try {
             Workflow workflow = workflowService.findById(scriptDTO.getWorkflowId());
             if (workflow == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Workflow não encontrado.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Workflow não encontrado.");
             }
 
             Clients client = null;
             if (scriptDTO.getClient() != null) {
+                ClientDTO clientDTO = scriptDTO.getClient();
                 client = new Clients();
-                client.setName(scriptDTO.getClient().getName());
-                client.setEmail(scriptDTO.getClient().getEmail());
-                client.setPhone(scriptDTO.getClient().getPhone());
-
-                // Salvar cliente no banco
+                client.setName(clientDTO.getName());
+                client.setEmail(clientDTO.getEmail());
+                client.setPhone(clientDTO.getPhone());
                 client = clientsService.save(client);
             }
 
-            // Criar script
+            Step firstStep = workflow.getSteps().stream()
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("O Workflow não possui steps configurados."));
+
             Script script = new Script();
             script.setWorkflow(workflow);
             script.setClient(client);
             script.setContent(scriptDTO.getContent());
-
+            script.setCurrentStep(firstStep);
             scriptService.save(script);
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Script criado com sucesso.");
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao criar script e cliente: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar script: " + e.getMessage());
         }
     }
 

@@ -12,7 +12,7 @@ public class Step {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "workflow_id")
+    @JoinColumn(name = "workflow_id", nullable = false)
     private Workflow workflow;
 
     private String name;
