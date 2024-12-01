@@ -1,14 +1,19 @@
 package com.eureka.testeeureka.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 public class ScriptDTO {
+
+    @NotNull(message = "O ID do workflow é obrigatório.")
     private Long workflowId;
+
+    @NotNull(message = "O conteúdo do script é obrigatório.")
     private String content;
 
-    private String clientName;
-    private String clientEmail;
-    private String clientPhone;
+    @NotNull(message = "As informações do cliente são obrigatórias.")
+    private ClientDTO client;
 
-    // Getters e setters
+    // Getter e Setter para workflowId
     public Long getWorkflowId() {
         return workflowId;
     }
@@ -17,6 +22,7 @@ public class ScriptDTO {
         this.workflowId = workflowId;
     }
 
+    // Getter e Setter para content
     public String getContent() {
         return content;
     }
@@ -25,27 +31,11 @@ public class ScriptDTO {
         this.content = content;
     }
 
-    public String getClientName() {
-        return clientName;
+    public ClientDTO getClient() {
+        return client;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
-
-    public String getClientEmail() {
-        return clientEmail;
-    }
-
-    public void setClientEmail(String clientEmail) {
-        this.clientEmail = clientEmail;
-    }
-
-    public String getClientPhone() {
-        return clientPhone;
-    }
-
-    public void setClientPhone(String clientPhone) {
-        this.clientPhone = clientPhone;
+    public void setClient(ClientDTO client) {
+        this.client = client;
     }
 }

@@ -36,36 +36,41 @@ public class ScriptController {
     }
 
     @PostMapping
-    @Operation(summary = "Criar um novo script com cliente",
-            description = "Endpoint para criar um novo script associado a um workflow e cadastrar um cliente.")
-    public ResponseEntity<String> createScriptWithClient(@RequestBody ScriptDTO scriptDTO) {
+    @Operation(summary = "Criar um novo script", description = "Endpoint para criar um novo script associado a um workflow e, opcionalmente, a um cliente.")
+    public ResponseEntity<String> createScript(@RequestBody ScriptDTO scriptDTO) {
         try {
-            // Busca o workflow pelo ID
             Workflow workflow = workflowService.findById(scriptDTO.getWorkflowId());
             if (workflow == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Workflow não encontrado.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Workflow não encontrado.");
             }
 
-            // Cria o cliente
-            Clients client = new Clients();
-            client.setName(scriptDTO.getClientName());
-            client.setEmail(scriptDTO.getClientEmail());
-            client.setPhone(scriptDTO.getClientPhone());
-            client = clientsService.save(client);
+            Clients client = null;
+            if (scriptDTO.getClient() != null) {
+                client = new Clients();
+                client.setName(scriptDTO.getClient().getName());
+                client.setEmail(scriptDTO.getClient().getEmail());
+                client.setPhone(scriptDTO.getClient().getPhone());
 
-            // Cria o script
+                // Salvar cliente no banco
+                client = clientsService.save(client);
+            }
+
+            // Criar script
             Script script = new Script();
             script.setWorkflow(workflow);
             script.setClient(client);
             script.setContent(scriptDTO.getContent());
+
             scriptService.save(script);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("Script e cliente criados com sucesso.");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Script criado com sucesso.");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erro ao criar script e cliente: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/by-client")
     @Operation(

@@ -20,6 +20,9 @@ public class ClientsService {
     }
 
     public Clients save(Clients client) {
+        if (client.getName() == null || client.getEmail() == null || client.getPhone() == null) {
+            throw new IllegalArgumentException("Os campos name, email e phone não podem ser nulos.");
+        }
         return clientsRepository.save(client);
     }
 
