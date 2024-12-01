@@ -18,4 +18,8 @@ public class ClientsService {
         Optional<Clients> client = clientsRepository.findById(id);
         return client.orElse(null);
     }
+
+    public Clients save(Clients client) {
+        return clientsRepository.save(client);
+    }
 }
