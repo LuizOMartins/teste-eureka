@@ -8,7 +8,6 @@ const SearchScripts: React.FC = () => {
 
     const handleSearch = async () => {
         try {
-            // Cria um objeto de parâmetros baseado nos valores fornecidos
             const params: any = {};
             if (email) params.email = email;
             if (phone) params.phone = phone;
