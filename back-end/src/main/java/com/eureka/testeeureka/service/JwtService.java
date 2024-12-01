@@ -13,9 +13,8 @@ import java.util.function.Function;
 public class JwtService {
 
     private final String secretKey = "d1kLjs8S-zX1QG7TQfYWxVYLTZVxKXVY9eWzM3tRVn4Pg4xQxnTwJQF-R1KyZ3N7XSXT3zV-XXpWJfWFhVJG7LTk7P";
-    private final long jwtExpirationMs = 3600000; // 1 hora
+    private final long jwtExpirationMs = 3600000;
 
-    // Gera um token JWT
     public String generateToken(String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
@@ -26,7 +25,6 @@ public class JwtService {
                 .compact();
     }
 
-    // Valida o token JWT
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -52,12 +50,9 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
 
-        // Aqui estou assumindo que você está armazenando as roles como uma string simples.
-        // Caso esteja usando uma lista, ajuste para mapear corretamente.
         return List.of(claims.get("role").toString());
     }
 
-    // Extrai uma informação específica do token
     private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey)

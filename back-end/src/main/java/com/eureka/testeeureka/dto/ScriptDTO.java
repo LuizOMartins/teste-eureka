@@ -13,7 +13,6 @@ public class ScriptDTO {
     @NotNull(message = "As informações do cliente são obrigatórias.")
     private ClientDTO client;
 
-    // Getter e Setter para workflowId
     public Long getWorkflowId() {
         return workflowId;
     }
@@ -22,7 +21,6 @@ public class ScriptDTO {
         this.workflowId = workflowId;
     }
 
-    // Getter e Setter para content
     public String getContent() {
         return content;
     }
