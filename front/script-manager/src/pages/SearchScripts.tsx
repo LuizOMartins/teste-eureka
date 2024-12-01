@@ -58,7 +58,10 @@ const SearchScripts: React.FC = () => {
                 <div style={{ marginTop: "2rem" }}>
                     <h2>Resultados</h2>
                     {results.map((script, index) => (
-                        <div key={index} style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "1rem" }}>
+                        <div
+                            key={index}
+                            style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "1rem" }}
+                        >
                             <p>
                                 <strong>Script ID:</strong> {script.scriptId}
                             </p>
@@ -71,22 +74,33 @@ const SearchScripts: React.FC = () => {
                             <p>
                                 <strong>ID do Workflow:</strong> {script.workflowId || "Não disponível"}
                             </p>
-                            {script.workflowSteps && script.workflowSteps.length > 0 ? (
-                                <p>
-                                    <strong>Etapas do Workflow:</strong> {script.workflowSteps.join(", ")}
-                                </p>
-                            ) : (
-                                <p>
-                                    <strong>Etapas do Workflow:</strong> Não disponível
-                                </p>
-                            )}
+                            <p>
+                                <strong>Etapas do Workflow:</strong>
+                            </p>
+                            <ul>
+                                {script.workflowSteps &&
+                                    script.workflowSteps.length > 0 &&
+                                    script.workflowSteps.map((step: string, stepIndex: number) => (
+                                        <li
+                                            key={stepIndex}
+                                            style={{
+                                                color: step === script.currentStep ? "green" : "black",
+                                                fontWeight: step === script.currentStep ? "bold" : "normal",
+                                            }}
+                                        >
+                                            {step}
+                                        </li>
+                                    ))}
+                            </ul>
                         </div>
                     ))}
                 </div>
             )}
 
             {results.length === 0 && (email || phone) && (
-                <p style={{ marginTop: "1rem", color: "gray" }}>Nenhum script encontrado para os dados fornecidos.</p>
+                <p style={{ marginTop: "1rem", color: "gray" }}>
+                    Nenhum script encontrado para os dados fornecidos.
+                </p>
             )}
         </div>
     );
