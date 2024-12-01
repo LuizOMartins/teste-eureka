@@ -72,7 +72,6 @@ public class ScriptController {
         }
     }
 
-
     @GetMapping("/by-client")
     @Operation(
             summary = "Consultar Script por Cliente",
@@ -87,33 +86,21 @@ public class ScriptController {
                 return ResponseEntity.badRequest().body("Por favor, forneça email ou phone para a consulta.");
             }
 
-            // Consultar cliente pelo e-mail ou telefone
             Clients client = clientsService.findByEmailOrPhone(email, phone);
             if (client == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
             }
 
-            // Consultar scripts relacionados ao cliente
-            List<Script> scripts = scriptService.findByClient(client);
+            List<Map<String, Object>> scripts = scriptService.findScriptDetailsByClientId(client.getId());
             if (scripts.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum script encontrado para o cliente fornecido.");
             }
 
-            // Montar resposta com detalhes dos scripts
-            List<Map<String, Object>> response = scripts.stream().map(script -> {
-                Map<String, Object> scriptDetails = new HashMap<>();
-                scriptDetails.put("scriptId", script.getId());
-                scriptDetails.put("currentStep", script.getCurrentStep() != null ? script.getCurrentStep().getName() : null);
-                scriptDetails.put("workflowSteps", script.getWorkflow().getSteps().stream()
-                        .map(Step::getName)
-                        .collect(Collectors.toList()));
-                return scriptDetails;
-            }).collect(Collectors.toList());
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(scripts);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao consultar scripts: " + e.getMessage());
         }
     }
+
 
 }

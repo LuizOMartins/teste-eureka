@@ -6,36 +6,25 @@ import java.util.Date;
 
 @Entity
 public class Script {
-    @Override
-    public String toString() {
-        return "Script{" +
-                "id=" + id +
-                ", workflow=" + workflow +
-                ", client=" + client +
-                ", currentStep=" + currentStep +
-                ", content='" + content + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "workflow_id", nullable = false)
     private Workflow workflow;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", nullable = true)
     private Clients client;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "current_step_id", nullable = true)
     private Step currentStep;
 
     @Lob
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -46,7 +35,6 @@ public class Script {
     @Column(name = "updated_at")
     private Date updatedAt = new Date();
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
